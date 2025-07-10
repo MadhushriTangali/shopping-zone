@@ -1,15 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
+import PaymentPopup from '../components/PaymentPopup';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 
 const Cart = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, loading } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart, loading } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false);
 
   if (!isAuthenticated) {
     return (
@@ -45,12 +47,30 @@ const Cart = () => {
   }
 
   const subtotal = getCartTotal();
-  const tax = subtotal * 0.08; // 8% tax
-  const shipping = subtotal > 50 ? 0 : 10; // Free shipping over $50
+  const tax = Math.round(subtotal * 0.18); // 18% GST
+  const shipping = subtotal > 500 ? 0 : 50; // Free shipping over ₹500
   const total = subtotal + tax + shipping;
+  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   const handleCheckout = () => {
-    navigate('/checkout');
+    setShowPaymentPopup(true);
+  };
+
+  const handleOrderConfirm = () => {
+    clearCart();
+    navigate('/payment-success', {
+      state: {
+        orderTotal: total,
+        orderItems: cartItems,
+        paymentMethod: 'Cash on Delivery'
+      }
+    });
+  };
+
+  const handleRemoveAll = () => {
+    if (window.confirm('Are you sure you want to remove all items from your cart?')) {
+      clearCart();
+    }
   };
 
   return (
@@ -69,7 +89,7 @@ const Cart = () => {
               </Link>
             </div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Shopping Cart ({cartItems.length})
+              Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
             </h1>
           </div>
 
@@ -91,8 +111,14 @@ const Cart = () => {
               {/* Cart Items */}
               <div className="lg:col-span-2">
                 <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                  <div className="p-6 border-b border-gray-200">
+                  <div className="p-6 border-b border-gray-200 flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-gray-900">Cart Items</h2>
+                    <button
+                      onClick={handleRemoveAll}
+                      className="text-red-600 hover:text-red-800 transition-colors text-sm font-medium"
+                    >
+                      Remove All
+                    </button>
                   </div>
                   
                   <div className="divide-y divide-gray-200">
@@ -107,13 +133,13 @@ const Cart = () => {
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
                           <p className="text-gray-600 text-sm">In stock: {item.stock}</p>
-                          <p className="text-lg font-bold text-blue-600">${item.price}</p>
+                          <p className="text-lg font-bold text-blue-600">₹{item.price.toLocaleString()}</p>
                         </div>
                         
                         <div className="flex items-center space-x-3">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            className="p-1 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50"
                             disabled={item.quantity <= 1}
                           >
                             <Minus className="h-4 w-4 text-gray-600" />
@@ -123,7 +149,7 @@ const Cart = () => {
                           
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+                            className="p-1 rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50"
                             disabled={item.quantity >= item.stock}
                           >
                             <Plus className="h-4 w-4 text-gray-600" />
@@ -132,7 +158,7 @@ const Cart = () => {
                         
                         <div className="text-right">
                           <p className="font-bold text-gray-900">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ₹{(item.price * item.quantity).toLocaleString()}
                           </p>
                           <button
                             onClick={() => removeFromCart(item.id)}
@@ -154,39 +180,43 @@ const Cart = () => {
                   
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span className="font-semibold">${subtotal.toFixed(2)}</span>
+                      <span className="text-gray-600">Subtotal ({itemCount} items)</span>
+                      <span className="font-semibold">₹{subtotal.toLocaleString()}</span>
                     </div>
                     
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Tax</span>
-                      <span className="font-semibold">${tax.toFixed(2)}</span>
+                      <span className="text-gray-600">GST (18%)</span>
+                      <span className="font-semibold">₹{tax.toLocaleString()}</span>
                     </div>
                     
                     <div className="flex justify-between">
                       <span className="text-gray-600">Shipping</span>
                       <span className="font-semibold">
-                        {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
+                        {shipping === 0 ? (
+                          <span className="text-green-600">Free</span>
+                        ) : (
+                          `₹${shipping}`
+                        )}
                       </span>
                     </div>
                     
-                    {subtotal < 50 && (
-                      <p className="text-sm text-gray-600">
-                        Add ${(50 - subtotal).toFixed(2)} more for free shipping!
+                    {subtotal < 500 && (
+                      <p className="text-sm text-green-600">
+                        Add ₹{(500 - subtotal).toLocaleString()} more for free shipping!
                       </p>
                     )}
                     
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
-                        <span>${total.toFixed(2)}</span>
+                        <span className="text-blue-600">₹{total.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>
                   
                   <button
                     onClick={handleCheckout}
-                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 mt-6"
+                    className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 px-6 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105 mt-6"
                   >
                     Proceed to Checkout
                   </button>
@@ -202,6 +232,15 @@ const Cart = () => {
             </div>
           )}
         </div>
+
+        {/* Payment Popup */}
+        <PaymentPopup
+          isOpen={showPaymentPopup}
+          onClose={() => setShowPaymentPopup(false)}
+          cartTotal={total}
+          itemCount={itemCount}
+          onOrderConfirm={handleOrderConfirm}
+        />
       </div>
     </Layout>
   );
