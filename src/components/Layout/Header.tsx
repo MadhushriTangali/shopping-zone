@@ -25,6 +25,12 @@ const Header = () => {
 
   const cartItemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
 
+  // Get user's display name from Supabase user object
+  const getUserDisplayName = () => {
+    if (!user) return 'User';
+    return user.user_metadata?.full_name || user.email?.split('@')[0] || 'User';
+  };
+
   return (
     <header className="bg-gradient-to-r from-blue-900 to-blue-800 text-white sticky top-0 z-50 shadow-lg">
       {/* Main header */}
@@ -60,7 +66,7 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <div className="hidden md:flex items-center space-x-4">
-                <span className="text-sm">Hello, {user?.name || 'User'}</span>
+                <span className="text-sm">Hello, {getUserDisplayName()}</span>
                 <Link to="/wishlist" className="relative hover:text-orange-300 transition-colors">
                   <Heart className="h-6 w-6" />
                 </Link>
@@ -146,7 +152,7 @@ const Header = () => {
           <div className="container mx-auto px-4 py-4 space-y-4">
             {isAuthenticated ? (
               <>
-                <div className="text-sm">Hello, {user?.name || 'User'}</div>
+                <div className="text-sm">Hello, {getUserDisplayName()}</div>
                 <Link to="/wishlist" className="flex items-center space-x-2">
                   <Heart className="h-5 w-5" />
                   <span>Wishlist</span>
