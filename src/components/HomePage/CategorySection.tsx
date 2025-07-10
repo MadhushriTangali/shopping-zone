@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Book, Smartphone, Shirt, ChefHat, Gamepad2, Baby, Watch, Sunglasses } from 'lucide-react';
+import { Book, Smartphone, Shirt, ChefHat, Gamepad2, Baby, Watch, Glasses } from 'lucide-react';
 
 const CategorySection = () => {
   const categories = [
@@ -12,7 +12,7 @@ const CategorySection = () => {
     { name: 'Toys', icon: Gamepad2, slug: 'toys', color: 'from-yellow-500 to-yellow-600' },
     { name: 'Kids Wear', icon: Baby, slug: 'kids-wear', color: 'from-indigo-500 to-indigo-600' },
     { name: 'Watches', icon: Watch, slug: 'watches', color: 'from-red-500 to-red-600' },
-    { name: 'Accessories', icon: Sunglasses, slug: 'accessories', color: 'from-teal-500 to-teal-600' },
+    { name: 'Accessories', icon: Glasses, slug: 'accessories', color: 'from-teal-500 to-teal-600' },
   ];
 
   return (
