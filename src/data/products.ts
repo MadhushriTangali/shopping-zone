@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -1258,3 +1257,11 @@ export const ratingOptions = [
   { ratingId: "2", imageUrl: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=30", name: "2★ & above" },
   { ratingId: "1", imageUrl: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=30", name: "1★ & above" }
 ];
+
+export const getFeaturedProducts = (): Product[] => {
+  // Return a selection of featured products from different categories
+  return products.filter(product => 
+    product.rating >= 4.7 && 
+    ['electronics-1', 'book-2', 'clothing-5', 'kitchen-11', 'toys-1', 'electronics-4', 'book-8', 'watches-1'].includes(product.id)
+  ).slice(0, 8);
+};
