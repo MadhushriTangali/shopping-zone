@@ -6,7 +6,7 @@ import Layout from '../components/Layout/Layout';
 import { Eye, EyeOff, Lock, Mail, User } from 'lucide-react';
 
 const Login = () => {
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoginMode, setIsLoginMode] = useState(false); // Default to sign-up mode
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -149,7 +149,8 @@ const Login = () => {
                       value={formData.password}
                       onChange={handleInputChange}
                       className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={isLoginMode ? "Enter your password" : "Create a password"}
+                      placeholder={isLoginMode ? "Enter your password" : "Create a password (min 6 characters)"}
+                      minLength={6}
                     />
                     <button
                       type="button"
@@ -163,16 +164,11 @@ const Login = () => {
                       )}
                     </button>
                   </div>
+                  {!isLoginMode && (
+                    <p className="mt-1 text-xs text-gray-500">Password must be at least 6 characters long</p>
+                  )}
                 </div>
               </div>
-
-              {isLoginMode && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
-                  <p className="font-medium mb-1">Demo Accounts:</p>
-                  <p>User: user@test.com / password</p>
-                  <p>Admin: admin@test.com / admin</p>
-                </div>
-              )}
 
               <button
                 type="submit"
@@ -197,6 +193,15 @@ const Login = () => {
                   </button>
                 </p>
               </div>
+
+              {!isLoginMode && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                  <p className="font-medium mb-1">Getting Started:</p>
+                  <p>1. Create your account with a valid email</p>
+                  <p>2. Check your email for confirmation (if required)</p>
+                  <p>3. Start shopping on NxtTrendz Pro!</p>
+                </div>
+              )}
             </form>
           </div>
         </div>
