@@ -13,6 +13,10 @@ const PaymentSuccess = () => {
     console.log('Order completed:', { orderTotal, shippingInfo, orderItems });
   }, [orderTotal, shippingInfo, orderItems]);
 
+  const formatPrice = (price: number) => {
+    return `₹${price.toLocaleString('en-IN')}`;
+  };
+
   if (!orderTotal) {
     return (
       <Layout>
@@ -51,7 +55,7 @@ const PaymentSuccess = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
                   <h3 className="font-medium text-gray-900 mb-2">Order Summary</h3>
-                  <p className="text-gray-600">Order Total: <span className="font-bold text-green-600">${orderTotal?.toFixed(2)}</span></p>
+                  <p className="text-gray-600">Order Total: <span className="font-bold text-green-600">{formatPrice(orderTotal)}</span></p>
                   <p className="text-gray-600">Order Date: {new Date().toLocaleDateString()}</p>
                   <p className="text-gray-600">Order ID: #{Date.now().toString().slice(-8)}</p>
                 </div>
@@ -83,7 +87,7 @@ const PaymentSuccess = () => {
                         <p className="text-gray-600 text-sm">Quantity: {item.quantity}</p>
                       </div>
                       <p className="font-medium text-gray-900">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {formatPrice(item.price * item.quantity)}
                       </p>
                     </div>
                   ))}

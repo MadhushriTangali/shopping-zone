@@ -23,6 +23,10 @@ const PaymentPopup = ({ isOpen, onClose, cartTotal, itemCount, onOrderConfirm }:
     { id: 'cod', name: 'Cash on Delivery', icon: Truck, disabled: false }
   ];
 
+  const formatPrice = (price: number) => {
+    return `₹${price.toLocaleString('en-IN')}`;
+  };
+
   const handleConfirmOrder = () => {
     if (selectedPayment === 'cod') {
       setOrderPlaced(true);
@@ -69,7 +73,7 @@ const PaymentPopup = ({ isOpen, onClose, cartTotal, itemCount, onOrderConfirm }:
             <h3 className="font-semibold text-lg mb-3">Order Summary</h3>
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-600">Items ({itemCount})</span>
-              <span className="font-medium">₹{cartTotal.toLocaleString()}</span>
+              <span className="font-medium">{formatPrice(cartTotal)}</span>
             </div>
             <div className="flex justify-between items-center mb-2">
               <span className="text-gray-600">Delivery Charges</span>
@@ -78,7 +82,7 @@ const PaymentPopup = ({ isOpen, onClose, cartTotal, itemCount, onOrderConfirm }:
             <div className="border-t border-gray-300 pt-2 mt-3">
               <div className="flex justify-between items-center">
                 <span className="font-bold text-lg">Total Amount</span>
-                <span className="font-bold text-lg text-blue-600">₹{cartTotal.toLocaleString()}</span>
+                <span className="font-bold text-lg text-blue-600">{formatPrice(cartTotal)}</span>
               </div>
             </div>
           </div>

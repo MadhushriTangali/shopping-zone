@@ -20,6 +20,8 @@ interface CartContextType {
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
+  getCartItemsCount: () => number; // This returns unique items count
+  getTotalItemsCount: () => number; // This returns total quantity
   loading: boolean;
 }
 
@@ -230,6 +232,14 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
+  const getCartItemsCount = () => {
+    return cartItems.length; // Returns unique items count (for cart icon)
+  };
+
+  const getTotalItemsCount = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0); // Total quantity
+  };
+
   return (
     <CartContext.Provider value={{
       cartItems,
@@ -238,6 +248,8 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
       updateQuantity,
       clearCart,
       getCartTotal,
+      getCartItemsCount,
+      getTotalItemsCount,
       loading
     }}>
       {children}

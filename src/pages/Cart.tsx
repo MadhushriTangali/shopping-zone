@@ -8,7 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft } from 'lucide-react';
 
 const Cart = () => {
-  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart, loading } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getCartTotal, clearCart, loading, getTotalItemsCount } = useCart();
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const [showPaymentPopup, setShowPaymentPopup] = useState(false);
@@ -50,7 +50,8 @@ const Cart = () => {
   const tax = Math.round(subtotal * 0.18); // 18% GST
   const shipping = subtotal > 500 ? 0 : 50; // Free shipping over ₹500
   const total = subtotal + tax + shipping;
-  const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
+  const uniqueItemCount = cartItems.length; // For display
+  const totalQuantity = getTotalItemsCount(); // For calculations
 
   const handleCheckout = () => {
     setShowPaymentPopup(true);
@@ -73,6 +74,10 @@ const Cart = () => {
     }
   };
 
+  const formatPrice = (price: number) => {
+    return `₹${price.toLocaleString('en-IN')}`;
+  };
+
   return (
     <Layout>
       <div className="min-h-screen bg-gray-50">
@@ -89,7 +94,7 @@ const Cart = () => {
               </Link>
             </div>
             <h1 className="text-3xl font-bold text-gray-900">
-              Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
+              Shopping Cart ({uniqueItemCount} {uniqueItemCount === 1 ? 'item' : 'items'})
             </h1>
           </div>
 
@@ -133,7 +138,7 @@ const Cart = () => {
                         <div className="flex-1">
                           <h3 className="font-semibold text-gray-900 mb-1">{item.name}</h3>
                           <p className="text-gray-600 text-sm">In stock: {item.stock}</p>
-                          <p className="text-lg font-bold text-blue-600">₹{item.price.toLocaleString()}</p>
+                          <p className="text-lg font-bold text-blue-600">{formatPrice(item.price)}</p>
                         </div>
                         
                         <div className="flex items-center space-x-3">
@@ -158,7 +163,7 @@ const Cart = () => {
                         
                         <div className="text-right">
                           <p className="font-bold text-gray-900">
-                            ₹{(item.price * item.quantity).toLocaleString()}
+                            {formatPrice(item.price * item.quantity)}
                           </p>
                           <button
                             onClick={() => removeFromCart(item.id)}
@@ -180,13 +185,13 @@ const Cart = () => {
                   
                   <div className="space-y-4">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal ({itemCount} items)</span>
-                      <span className="font-semibold">₹{subtotal.toLocaleString()}</span>
+                      <span className="text-gray-600">Subtotal ({totalQuantity} items)</span>
+                      <span className="font-semibold">{formatPrice(subtotal)}</span>
                     </div>
                     
                     <div className="flex justify-between">
                       <span className="text-gray-600">GST (18%)</span>
-                      <span className="font-semibold">₹{tax.toLocaleString()}</span>
+                      <span className="font-semibold">{formatPrice(tax)}</span>
                     </div>
                     
                     <div className="flex justify-between">
@@ -195,21 +200,21 @@ const Cart = () => {
                         {shipping === 0 ? (
                           <span className="text-green-600">Free</span>
                         ) : (
-                          `₹${shipping}`
+                          formatPrice(shipping)
                         )}
                       </span>
                     </div>
                     
                     {subtotal < 500 && (
                       <p className="text-sm text-green-600">
-                        Add ₹{(500 - subtotal).toLocaleString()} more for free shipping!
+                        Add {formatPrice(500 - subtotal)} more for free shipping!
                       </p>
                     )}
                     
                     <div className="border-t border-gray-200 pt-4">
                       <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
-                        <span className="text-blue-600">₹{total.toLocaleString()}</span>
+                        <span className="text-blue-600">{formatPrice(total)}</span>
                       </div>
                     </div>
                   </div>
@@ -238,7 +243,7 @@ const Cart = () => {
           isOpen={showPaymentPopup}
           onClose={() => setShowPaymentPopup(false)}
           cartTotal={total}
-          itemCount={itemCount}
+          itemCount={uniqueItemCount}
           onOrderConfirm={handleOrderConfirm}
         />
       </div>
