@@ -3,6 +3,7 @@ import React from 'react';
 import { Heart, Star, ShoppingCart } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
+import { useWishlist } from '../../hooks/useWishlist';
 
 interface Product {
   id: string;
@@ -23,6 +24,7 @@ interface ProductCardProps {
 const ProductCard = ({ product }: ProductCardProps) => {
   const { addToCart } = useCart();
   const { isAuthenticated } = useAuth();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
@@ -38,9 +40,31 @@ const ProductCard = ({ product }: ProductCardProps) => {
     });
   };
 
+  const handleWishlistToggle = () => {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    const wishlistItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      rating: product.rating
+    };
+
+    if (isInWishlist(product.id)) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(wishlistItem);
+    }
+  };
+
   const formatPrice = (price: number) => {
     return `₹${price.toLocaleString('en-IN')}`;
   };
+
+  const isProductInWishlist = isInWishlist(product.id);
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 group">
@@ -50,8 +74,18 @@ const ProductCard = ({ product }: ProductCardProps) => {
           alt={product.name}
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
         />
-        <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-          <Heart className="h-4 w-4 text-gray-600 hover:text-red-500" />
+        <button 
+          onClick={handleWishlistToggle}
+          disabled={!isAuthenticated}
+          className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <Heart 
+            className={`h-4 w-4 transition-colors ${
+              isProductInWishlist 
+                ? 'text-red-500 fill-red-500' 
+                : 'text-gray-600 hover:text-red-500'
+            }`} 
+          />
         </button>
         {product.stock < 10 && (
           <span className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
