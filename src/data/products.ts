@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -92,14 +91,14 @@ export const products: Product[] = [
   },
   {
     id: "electronics-8",
-    name: "Nintendo Switch OLED",
-    price: 37980,
-    image: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=500",
+    name: "Gaming Laptop RTX 4080",
+    price: 149999,
+    image: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?w=500",
     category: "Electronics",
-    rating: 4.8,
-    description: "Portable gaming console with vibrant OLED screen",
-    reviews: 3245,
-    stock: 22
+    rating: 4.6,
+    description: "High-performance gaming laptop with RTX 4080 graphics",
+    reviews: 1234,
+    stock: 10
   },
   {
     id: "electronics-9",
@@ -122,6 +121,28 @@ export const products: Product[] = [
     description: "Advanced smartwatch with health monitoring features",
     reviews: 4532,
     stock: 45
+  },
+  {
+    id: "electronics-11",
+    name: "Wireless Earbuds Pro",
+    price: 18999,
+    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500",
+    category: "Electronics",
+    rating: 4.5,
+    description: "Premium wireless earbuds with noise cancellation",
+    reviews: 3421,
+    stock: 60
+  },
+  {
+    id: "electronics-12",
+    name: "Gaming Monitor 27\" 4K",
+    price: 45999,
+    image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500",
+    category: "Electronics",
+    rating: 4.6,
+    description: "4K gaming monitor with 144Hz refresh rate",
+    reviews: 876,
+    stock: 25
   },
 
   // Books (25+ items)
@@ -180,6 +201,28 @@ export const products: Product[] = [
     reviews: 9876,
     stock: 250
   },
+  {
+    id: "book-6",
+    name: "The 7 Habits of Highly Effective People",
+    price: 425,
+    image: "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=500",
+    category: "Books",
+    rating: 4.6,
+    description: "Personal development and leadership principles",
+    reviews: 6543,
+    stock: 140
+  },
+  {
+    id: "book-7",
+    name: "Steve Jobs Biography",
+    price: 599,
+    image: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=500",
+    category: "Books",
+    rating: 4.7,
+    description: "The official biography of Apple's co-founder",
+    reviews: 4321,
+    stock: 95
+  },
 
   // Clothing (25+ items)
   {
@@ -237,6 +280,39 @@ export const products: Product[] = [
     reviews: 3456,
     stock: 80
   },
+  {
+    id: "clothing-6",
+    name: "Women's Blazer",
+    price: 3999,
+    image: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500",
+    category: "Clothing",
+    rating: 4.7,
+    description: "Professional blazer for business occasions",
+    reviews: 987,
+    stock: 35
+  },
+  {
+    id: "clothing-7",
+    name: "Casual Sneakers",
+    price: 3499,
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500",
+    category: "Clothing",
+    rating: 4.5,
+    description: "Comfortable sneakers for daily wear",
+    reviews: 2134,
+    stock: 120
+  },
+  {
+    id: "clothing-8",
+    name: "Women's Handbag",
+    price: 2999,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500",
+    category: "Clothing",
+    rating: 4.4,
+    description: "Stylish leather handbag for everyday use",
+    reviews: 1543,
+    stock: 65
+  },
 
   // Kitchen (25+ items)
   {
@@ -293,6 +369,17 @@ export const products: Product[] = [
     description: "Healthy cooking with 80% less oil",
     reviews: 3421,
     stock: 35
+  },
+  {
+    id: "kitchen-6",
+    name: "Blender High Speed",
+    price: 4999,
+    image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?w=500",
+    category: "Kitchen",
+    rating: 4.3,
+    description: "High-speed blender for smoothies and soups",
+    reviews: 1876,
+    stock: 45
   },
 
   // Toys (25+ items)
@@ -471,7 +558,7 @@ export const products: Product[] = [
     id: "accessories-1",
     name: "Leather Wallet",
     price: 1999,
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500",
+    image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=500",
     category: "Accessories",
     rating: 4.5,
     description: "Genuine leather wallet with RFID protection",

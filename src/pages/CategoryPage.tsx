@@ -1,6 +1,6 @@
 
-import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import ProductCard from '../components/Products/ProductCard';
 import { products, categoryOptions, ratingOptions } from '../data/products';
@@ -8,6 +8,7 @@ import { Search, Filter, SortAsc, X } from 'lucide-react';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
+  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -29,18 +30,30 @@ const CategoryPage = () => {
 
   const categoryName = category ? categoryMap[category] || category : 'All Products';
 
-  // Set initial category filter based on URL
-  React.useEffect(() => {
+  // Handle URL search parameters and category selection
+  useEffect(() => {
+    const urlSearchTerm = searchParams.get('search');
+    if (urlSearchTerm) {
+      setSearchTerm(urlSearchTerm);
+    }
+    
     if (category && category !== 'all') {
       setSelectedCategory(categoryName);
     }
-  }, [category, categoryName]);
+  }, [category, categoryName, searchParams]);
 
   const filteredProducts = useMemo(() => {
     setLoading(true);
     let filtered = products;
 
-    // Filter by category
+    console.log('Filtering products with:', {
+      searchTerm,
+      selectedCategory,
+      category,
+      categoryName
+    });
+
+    // Filter by category first
     if (selectedCategory && selectedCategory !== 'All Categories') {
       filtered = filtered.filter(product => 
         product.category.toLowerCase() === selectedCategory.toLowerCase()
@@ -53,10 +66,11 @@ const CategoryPage = () => {
 
     // Filter by search term
     if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase())
+        product.name.toLowerCase().includes(searchLower) ||
+        product.category.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower)
       );
     }
 
@@ -88,7 +102,8 @@ const CategoryPage = () => {
       }
     });
 
-    setTimeout(() => setLoading(false), 300); // Simulate API call
+    console.log('Filtered products:', filtered.length);
+    setTimeout(() => setLoading(false), 300);
     return filtered;
   }, [category, categoryName, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
 
