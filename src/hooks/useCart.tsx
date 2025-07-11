@@ -20,8 +20,8 @@ interface CartContextType {
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   getCartTotal: () => number;
-  getCartItemsCount: () => number; // This returns unique items count
-  getTotalItemsCount: () => number; // This returns total quantity
+  getCartItemsCount: () => number;
+  getTotalItemsCount: () => number;
   loading: boolean;
 }
 
@@ -233,11 +233,11 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const getCartItemsCount = () => {
-    return cartItems.length; // Returns unique items count (for cart icon)
+    return cartItems.length;
   };
 
   const getTotalItemsCount = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0); // Total quantity
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
   };
 
   return (
@@ -260,7 +260,18 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
 export const useCart = () => {
   const context = useContext(CartContext);
   if (context === undefined) {
-    throw new Error('useCart must be used within a CartProvider');
+    // Return default values instead of throwing error to prevent crashes
+    return {
+      cartItems: [],
+      addToCart: () => {},
+      removeFromCart: () => {},
+      updateQuantity: () => {},
+      clearCart: () => {},
+      getCartTotal: () => 0,
+      getCartItemsCount: () => 0,
+      getTotalItemsCount: () => 0,
+      loading: false
+    };
   }
   return context;
 };

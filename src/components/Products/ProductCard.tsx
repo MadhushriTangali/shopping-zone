@@ -25,6 +25,10 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const { isAuthenticated } = useAuth();
 
   const handleAddToCart = () => {
+    if (!isAuthenticated) {
+      return;
+    }
+    
     addToCart({
       id: product.id,
       name: product.name,
@@ -35,7 +39,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const formatPrice = (price: number) => {
-    return `₹${price.toLocaleString()}`;
+    return `₹${price.toLocaleString('en-IN')}`;
   };
 
   return (
