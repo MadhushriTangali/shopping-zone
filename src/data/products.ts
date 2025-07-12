@@ -634,6 +634,6 @@ export const ratingOptions = [
 export const getFeaturedProducts = (): Product[] => {
   return products.filter(product => 
     product.rating >= 4.7 && 
-    ['electronics-1', 'book-2', 'clothing-5', 'kitchen-11', 'toys-1', 'electronics-4', 'book-8', 'watches-1'].includes(product.id)
+    ['electronics-1', 'book-2', 'clothing-5', 'kitchen-3', 'toys-1', 'electronics-4', 'book-7', 'watches-1'].includes(product.id)
   ).slice(0, 8);
 };

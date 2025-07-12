@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Search, ShoppingCart, User, Heart, Menu, X, LogOut } from 'lucide-react';
@@ -120,13 +121,6 @@ const Header = () => {
                       onClick={() => setIsUserMenuOpen(false)}
                     >
                       Profile
-                    </Link>
-                    <Link
-                      to="/orders"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsUserMenuOpen(false)}
-                    >
-                      My Orders
                     </Link>
                     <button
                       onClick={handleLogout}
