@@ -72,7 +72,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <img
           src={product.image}
           alt={product.name}
+          loading="lazy"
           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+          style={{ 
+            imageRendering: 'crisp-edges',
+            objectFit: 'cover',
+            objectPosition: 'center'
+          }}
         />
         <button 
           onClick={handleWishlistToggle}
