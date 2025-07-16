@@ -4,18 +4,7 @@ import { Heart, Star, ShoppingCart } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
 import { useWishlist } from '../../hooks/useWishlist';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-  rating: number;
-  description: string;
-  reviews: number;
-  stock: number;
-}
+import type { Product } from '@/services/productsService';
 
 interface ProductCardProps {
   product: Product;
@@ -34,7 +23,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: Number(product.price),
       image: product.image,
       stock: product.stock
     });
@@ -48,9 +37,9 @@ const ProductCard = ({ product }: ProductCardProps) => {
     const wishlistItem = {
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: Number(product.price),
       image: product.image,
-      rating: product.rating
+      rating: Number(product.rating)
     };
 
     if (isInWishlist(product.id)) {
@@ -109,13 +98,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
         <div className="flex items-center mb-2">
           <div className="flex items-center">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-            <span className="text-sm font-medium text-gray-700 ml-1">{product.rating}</span>
+            <span className="text-sm font-medium text-gray-700 ml-1">{Number(product.rating)}</span>
           </div>
           <span className="text-sm text-gray-500 ml-2">({product.reviews.toLocaleString()} reviews)</span>
         </div>
         
         <div className="flex items-center justify-between mb-3">
-          <div className="text-xl font-bold text-blue-600">{formatPrice(product.price)}</div>
+          <div className="text-xl font-bold text-blue-600">{formatPrice(Number(product.price))}</div>
           <div className="text-sm text-gray-500">Stock: {product.stock}</div>
         </div>
         

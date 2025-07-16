@@ -3,7 +3,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import ProductCard from '../components/Products/ProductCard';
-import { products, categoryOptions, ratingOptions } from '../data/products';
+import { useProductsByCategory, useCategories, useRatingOptions } from '../hooks/useProducts';
 import { Search, Filter, SortAsc, X } from 'lucide-react';
 
 const CategoryPage = () => {
@@ -15,7 +15,11 @@ const CategoryPage = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  // Fetch data from Supabase
+  const { data: products = [], isLoading: productsLoading } = useProductsByCategory(category || 'all');
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: ratingOptions = [], isLoading: ratingOptionsLoading } = useRatingOptions();
 
   const categoryMap: Record<string, string> = {
     'books': 'Books',
@@ -43,8 +47,9 @@ const CategoryPage = () => {
   }, [category, categoryName, searchParams]);
 
   const filteredProducts = useMemo(() => {
-    setLoading(true);
-    let filtered = products;
+    if (productsLoading) return [];
+    
+    let filtered = [...products];
 
     console.log('Filtering products with:', {
       searchTerm,
@@ -70,7 +75,7 @@ const CategoryPage = () => {
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower)
+        (product.description && product.description.toLowerCase().includes(searchLower))
       );
     }
 
@@ -103,9 +108,8 @@ const CategoryPage = () => {
     });
 
     console.log('Filtered products:', filtered.length);
-    setTimeout(() => setLoading(false), 300);
     return filtered;
-  }, [category, categoryName, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
+  }, [products, productsLoading, category, categoryName, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -120,6 +124,21 @@ const CategoryPage = () => {
     e.preventDefault();
     // Search is handled in the useMemo effect
   };
+
+  const loading = productsLoading || categoriesLoading || ratingOptionsLoading;
+
+  // Convert categories data to match the legacy format
+  const categoryOptionsFormatted = categories.map(cat => ({
+    categoryId: cat.id,
+    name: cat.name
+  }));
+
+  // Convert rating options data to match the legacy format
+  const ratingOptionsFormatted = ratingOptions.map(rating => ({
+    ratingId: rating.id,
+    imageUrl: rating.image_url || '',
+    name: rating.name
+  }));
 
   return (
     <Layout>
@@ -158,7 +177,7 @@ const CategoryPage = () => {
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 >
-                  {categoryOptions.map((cat) => (
+                  {categoryOptionsFormatted.map((cat) => (
                     <option key={cat.categoryId} value={cat.name}>
                       {cat.name}
                     </option>
@@ -173,7 +192,7 @@ const CategoryPage = () => {
                   onChange={(e) => setSelectedRating(e.target.value)}
                   className="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 >
-                  {ratingOptions.map((rating) => (
+                  {ratingOptionsFormatted.map((rating) => (
                     <option key={rating.ratingId} value={rating.ratingId}>
                       {rating.name}
                     </option>

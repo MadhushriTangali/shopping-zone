@@ -50,6 +50,24 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           created_at: string
@@ -80,6 +98,48 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          image: string
+          name: string
+          price: number
+          rating: number
+          reviews: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          id: string
+          image: string
+          name: string
+          price: number
+          rating?: number
+          reviews?: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image?: string
+          name?: string
+          price?: number
+          rating?: number
+          reviews?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -104,6 +164,27 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rating_options: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          image_url?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
         }
         Relationships: []
       }
