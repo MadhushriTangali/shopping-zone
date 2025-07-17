@@ -4,7 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import ProductCard from '../components/Products/ProductCard';
 import { useProductsByCategory, useCategories, useRatingOptions } from '../hooks/useProducts';
-import { Search, Filter, SortAsc, X } from 'lucide-react';
+import { Filter, SortAsc, X } from 'lucide-react';
 
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
@@ -34,48 +34,37 @@ const CategoryPage = () => {
 
   const categoryName = category ? categoryMap[category] || category : 'All Products';
 
-  // Handle URL search parameters and category selection
+  // Handle URL search parameters
   useEffect(() => {
     const urlSearchTerm = searchParams.get('search');
     if (urlSearchTerm) {
       setSearchTerm(urlSearchTerm);
     }
-    
-    if (category && category !== 'all') {
-      setSelectedCategory(categoryName);
-    }
-  }, [category, categoryName, searchParams]);
+  }, [searchParams]);
 
   const filteredProducts = useMemo(() => {
     if (productsLoading) return [];
     
     let filtered = [...products];
 
-    console.log('Filtering products with:', {
-      searchTerm,
-      selectedCategory,
-      category,
-      categoryName
-    });
+    console.log('Original products:', filtered.length);
+    console.log('Search term:', searchTerm);
+    console.log('Selected category:', selectedCategory);
 
-    // Filter by category first
-    if (selectedCategory && selectedCategory !== 'All Categories') {
-      filtered = filtered.filter(product => 
-        product.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    } else if (category && category !== 'all') {
-      filtered = filtered.filter(product => 
-        product.category.toLowerCase() === categoryName.toLowerCase()
-      );
-    }
-
-    // Filter by search term
+    // Filter by search term (case-insensitive)
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
         product.name.toLowerCase().includes(searchLower) ||
         product.category.toLowerCase().includes(searchLower) ||
         (product.description && product.description.toLowerCase().includes(searchLower))
+      );
+    }
+
+    // Filter by additional category selection (if different from URL category)
+    if (selectedCategory && selectedCategory !== 'All Categories') {
+      filtered = filtered.filter(product => 
+        product.category.toLowerCase() === selectedCategory.toLowerCase()
       );
     }
 
@@ -109,7 +98,7 @@ const CategoryPage = () => {
 
     console.log('Filtered products:', filtered.length);
     return filtered;
-  }, [products, productsLoading, category, categoryName, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
+  }, [products, productsLoading, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -120,18 +109,16 @@ const CategoryPage = () => {
     setSortOrder('asc');
   };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Search is handled in the useMemo effect
-  };
-
   const loading = productsLoading || categoriesLoading || ratingOptionsLoading;
 
   // Convert categories data to match the legacy format
-  const categoryOptionsFormatted = categories.map(cat => ({
-    categoryId: cat.id,
-    name: cat.name
-  }));
+  const categoryOptionsFormatted = [
+    { categoryId: "ALL", name: "All Categories" },
+    ...categories.map(cat => ({
+      categoryId: cat.id,
+      name: cat.name
+    }))
+  ];
 
   // Convert rating options data to match the legacy format
   const ratingOptionsFormatted = ratingOptions.map(rating => ({
@@ -154,21 +141,9 @@ const CategoryPage = () => {
             </p>
           </div>
 
-          {/* Filters and Search */}
+          {/* Filters - Removed the search bar from here */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-              {/* Search */}
-              <form onSubmit={handleSearch} className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </form>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               {/* Category Filter */}
               <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
