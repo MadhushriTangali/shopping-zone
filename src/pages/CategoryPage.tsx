@@ -9,7 +9,6 @@ import { Filter, SortAsc, X } from 'lucide-react';
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
   const [searchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
@@ -34,32 +33,13 @@ const CategoryPage = () => {
 
   const categoryName = category ? categoryMap[category] || category : 'All Products';
 
-  // Handle URL search parameters
-  useEffect(() => {
-    const urlSearchTerm = searchParams.get('search');
-    if (urlSearchTerm) {
-      setSearchTerm(urlSearchTerm);
-    }
-  }, [searchParams]);
-
   const filteredProducts = useMemo(() => {
     if (productsLoading) return [];
     
     let filtered = [...products];
 
     console.log('Original products:', filtered.length);
-    console.log('Search term:', searchTerm);
     console.log('Selected category:', selectedCategory);
-
-    // Filter by search term (case-insensitive)
-    if (searchTerm) {
-      const searchLower = searchTerm.toLowerCase();
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchLower) ||
-        product.category.toLowerCase().includes(searchLower) ||
-        (product.description && product.description.toLowerCase().includes(searchLower))
-      );
-    }
 
     // Filter by additional category selection (if different from URL category)
     if (selectedCategory && selectedCategory !== 'All Categories') {
@@ -98,10 +78,9 @@ const CategoryPage = () => {
 
     console.log('Filtered products:', filtered.length);
     return filtered;
-  }, [products, productsLoading, searchTerm, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
+  }, [products, productsLoading, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
 
   const clearFilters = () => {
-    setSearchTerm('');
     setSelectedCategory('');
     setSelectedRating('');
     setPriceRange([0, 200000]);
@@ -141,7 +120,7 @@ const CategoryPage = () => {
             </p>
           </div>
 
-          {/* Filters - Removed the search bar from here */}
+          {/* Filters */}
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
               {/* Category Filter */}

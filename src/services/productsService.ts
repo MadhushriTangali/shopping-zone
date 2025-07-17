@@ -47,7 +47,7 @@ export const productsService = {
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .ilike('category', dbCategory)
+      .eq('category', dbCategory)
       .order('created_at', { ascending: false });
 
     if (error) {
