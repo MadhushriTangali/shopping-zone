@@ -31,7 +31,17 @@ const CategoryPage = () => {
     'accessories': 'Accessories'
   };
 
-  const categoryName = category ? categoryMap[category] || category : 'All Products';
+  // Set the selected category based on URL parameter
+  useEffect(() => {
+    if (category && category !== 'all') {
+      const mappedCategory = categoryMap[category];
+      if (mappedCategory) {
+        setSelectedCategory(mappedCategory);
+      }
+    } else {
+      setSelectedCategory('All Categories');
+    }
+  }, [category]);
 
   const filteredProducts = useMemo(() => {
     if (productsLoading) return [];
@@ -81,7 +91,7 @@ const CategoryPage = () => {
   }, [products, productsLoading, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
 
   const clearFilters = () => {
-    setSelectedCategory('');
+    setSelectedCategory(category && category !== 'all' ? categoryMap[category] || 'All Categories' : 'All Categories');
     setSelectedRating('');
     setPriceRange([0, 200000]);
     setSortBy('name');
@@ -90,7 +100,7 @@ const CategoryPage = () => {
 
   const loading = productsLoading || categoriesLoading || ratingOptionsLoading;
 
-  // Convert categories data to match the legacy format
+  // Convert categories data to match the legacy format (remove duplicate All Categories)
   const categoryOptionsFormatted = [
     { categoryId: "ALL", name: "All Categories" },
     ...categories.map(cat => ({
@@ -100,11 +110,14 @@ const CategoryPage = () => {
   ];
 
   // Convert rating options data to match the legacy format
-  const ratingOptionsFormatted = ratingOptions.map(rating => ({
-    ratingId: rating.id,
-    imageUrl: rating.image_url || '',
-    name: rating.name
-  }));
+  const ratingOptionsFormatted = [
+    { ratingId: "", name: "All Ratings" },
+    ...ratingOptions.map(rating => ({
+      ratingId: rating.id,
+      imageUrl: rating.image_url || '',
+      name: rating.name
+    }))
+  ];
 
   return (
     <Layout>
@@ -112,11 +125,8 @@ const CategoryPage = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {categoryName}
-            </h1>
             <p className="text-gray-600 text-lg">
-              Discover amazing products in {categoryName.toLowerCase()} - All prices in Indian Rupees (₹)
+              Discover amazing products - All prices in Indian Rupees (₹)
             </p>
           </div>
 
