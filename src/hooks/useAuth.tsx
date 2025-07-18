@@ -120,10 +120,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         console.error('Registration error:', error);
         
         // Handle specific error messages
-        if (error.message.includes('User already registered')) {
+        if (error.message.includes('User already registered') || error.message.includes('already been registered')) {
           toast({
-            title: "Registration Failed",
-            description: "An account with this email already exists. Please try logging in instead.",
+            title: "Email Already Exists",
+            description: `An account with ${email} already exists. Please try logging in instead or use a different email address.`,
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Password should be at least')) {
+          toast({
+            title: "Password Too Short",
+            description: "Password must be at least 6 characters long. Please choose a stronger password.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Invalid email')) {
+          toast({
+            title: "Invalid Email",
+            description: "Please enter a valid email address.",
             variant: "destructive",
           });
         } else {
