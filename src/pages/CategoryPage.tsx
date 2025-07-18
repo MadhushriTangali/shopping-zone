@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout/Layout';
 import ProductCard from '../components/Products/ProductCard';
 import { useProductsByCategory, useCategories, useRatingOptions } from '../hooks/useProducts';
@@ -9,10 +9,10 @@ import { Filter, SortAsc, X } from 'lucide-react';
 const CategoryPage = () => {
   const { category } = useParams<{ category: string }>();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [sortBy, setSortBy] = useState<'name' | 'price' | 'rating'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 200000]);
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedRating, setSelectedRating] = useState('');
 
   // Fetch data from Supabase
@@ -31,17 +31,13 @@ const CategoryPage = () => {
     'accessories': 'Accessories'
   };
 
-  // Set the selected category based on URL parameter
-  useEffect(() => {
-    if (category && category !== 'all') {
-      const mappedCategory = categoryMap[category];
-      if (mappedCategory) {
-        setSelectedCategory(mappedCategory);
-      }
-    } else {
-      setSelectedCategory('All Categories');
+  // Get current category display name
+  const getCurrentCategoryName = () => {
+    if (!category || category === 'all') {
+      return 'All Categories';
     }
-  }, [category]);
+    return categoryMap[category] || 'All Categories';
+  };
 
   const filteredProducts = useMemo(() => {
     if (productsLoading) return [];
@@ -49,14 +45,7 @@ const CategoryPage = () => {
     let filtered = [...products];
 
     console.log('Original products:', filtered.length);
-    console.log('Selected category:', selectedCategory);
-
-    // Filter by additional category selection (if different from URL category)
-    if (selectedCategory && selectedCategory !== 'All Categories') {
-      filtered = filtered.filter(product => 
-        product.category.toLowerCase() === selectedCategory.toLowerCase()
-      );
-    }
+    console.log('Current URL category:', category);
 
     // Filter by rating
     if (selectedRating) {
@@ -88,23 +77,42 @@ const CategoryPage = () => {
 
     console.log('Filtered products:', filtered.length);
     return filtered;
-  }, [products, productsLoading, sortBy, sortOrder, priceRange, selectedCategory, selectedRating]);
+  }, [products, productsLoading, sortBy, sortOrder, priceRange, selectedRating, category]);
+
+  const handleCategoryChange = (selectedCategory: string) => {
+    console.log('Category changed to:', selectedCategory);
+    
+    if (selectedCategory === 'All Categories') {
+      navigate('/category/all');
+    } else {
+      // Find the URL slug for the selected category
+      const categorySlug = Object.keys(categoryMap).find(
+        key => categoryMap[key] === selectedCategory
+      );
+      
+      if (categorySlug) {
+        navigate(`/category/${categorySlug}`);
+      } else {
+        navigate('/category/all');
+      }
+    }
+  };
 
   const clearFilters = () => {
-    setSelectedCategory(category && category !== 'all' ? categoryMap[category] || 'All Categories' : 'All Categories');
     setSelectedRating('');
     setPriceRange([0, 200000]);
     setSortBy('name');
     setSortOrder('asc');
+    // Don't change the category when clearing filters
   };
 
   const loading = productsLoading || categoriesLoading || ratingOptionsLoading;
 
-  // Convert categories data to match the legacy format (remove duplicate All Categories)
+  // Create category options without duplicates
   const categoryOptionsFormatted = [
-    { categoryId: "ALL", name: "All Categories" },
+    { categoryId: "all", name: "All Categories" },
     ...categories.map(cat => ({
-      categoryId: cat.id,
+      categoryId: cat.id.toLowerCase(),
       name: cat.name
     }))
   ];
@@ -137,8 +145,8 @@ const CategoryPage = () => {
               <div className="relative">
                 <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                 <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  value={getCurrentCategoryName()}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                 >
                   {categoryOptionsFormatted.map((cat) => (
